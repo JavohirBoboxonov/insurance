@@ -43,6 +43,8 @@ TEMPLATES = [
     },
 ]
 
+TELEGRAM_BOT_TOKEN = os.getenv('BOT_TOKEN')
+
 WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {

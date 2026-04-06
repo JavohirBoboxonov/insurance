@@ -1,12 +1,25 @@
 from rest_framework import serializers
 from .models import *
 import re
-
-from rest_framework import serializers
 import hmac
 import hashlib
 from django.conf import settings
 
+class SignInSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    
+    def validate_phone_number(self, attrs):
+        pattern = r' ^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'
+
+        if not re.match(pattern, attrs):
+            raise serializers.ValidationError("Invalid phone number")
+        
+        if not CustomUser.objects.filter(attrs['phone_number'] == self.phone_number).exists():
+            raise serializers.ValidationError("Ushbu raqam ro`yxatdan o`tmagan")
+
+        return attrs
+        
 
 class TelegramAuthSerializer(serializers.Serializer):
     id = serializers.IntegerField()
