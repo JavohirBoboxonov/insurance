@@ -6,14 +6,12 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-
 def get_cache_keys(phone_number: str) -> dict:
     hashed = hashlib.md5(phone_number.encode()).hexdigest()
     return {
         'attempts': f'login_attempts_{hashed}',
         'blocked':  f'login_blocked_{hashed}',
     }
-
 
 @shared_task(bind=True, max_retries=3)
 def register_failed_login(self, phone_number: str):

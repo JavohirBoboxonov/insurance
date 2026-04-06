@@ -9,9 +9,25 @@ from .models import CustomUser
 class Login(APIView):
     def post(self, request):
         serializer = SignInSerializer(data=request.data)
-        if serializer.is_valid():
-            data = serializer.validated_data
-            
+        if not serializer.is_valid():
+            return Response({
+                'message': 'Ma`lumotlar Noto`g`ri',
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        user = serializer.validated_data['user']
+
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            "message": "Succesfully Login",
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "user_data": {
+                "id": user.id,
+                "phone_number": user.phone_number
+            }
+        }, status=status.HTTP_400_BAD_REQUEST)
             
 
 class TelegramLogin(APIView):
