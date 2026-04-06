@@ -13,6 +13,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
+    'django_celery_results',
     'users',
 ]
 
@@ -73,6 +75,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+    }
+}
 AUTH_USER_MODEL = 'users.CustomUser'
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

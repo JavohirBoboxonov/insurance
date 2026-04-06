@@ -4,29 +4,40 @@ import re
 import hmac
 import hashlib
 from django.conf import settings
+from django.contrib.auth import authenticate
 
 class SignInSerializer(serializers.Serializer):
     phone_number = serializers.CharField(write_only=True, required=True)
     password = serializers.CharField(write_only=True, required=True)
     
-    def validate_phone_number(self, attrs):
-        pattern = r' ^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'
+    def validate(self, attrs):
+        pattern = r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'
 
-        if not re.match(pattern, attrs):
+        if not re.match(pattern, attrs['phone_number']):
             raise serializers.ValidationError("Invalid phone number")
         
         if not CustomUser.objects.filter(attrs['phone_number'] == self.phone_number).exists():
             raise serializers.ValidationError("Ushbu raqam ro`yxatdan o`tmagan")
+    
+        pass_pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$'
 
-        return attrs
+        if not re.match(pass_pattern, attrs):
+            raise serializers.ValidationError("Ushbu parol havfsiz emas")
+
+        user = authenticate(attrs['phone_number', attrs['password']])
+        
+        if not user:
+            raise serializers.ValidationError("This user none")
+        
         
 
+        
 class TelegramAuthSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    first_name = serializers.CharField(required=False, allow_blank=True)
-    last_name = serializers.CharField(required=False, allow_blank=True)
-    username = serializers.CharField(required=False, allow_blank=True)
-    photo_url = serializers.URLField(required=False, allow_blank=True)
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
+    username = serializers.CharField(required=False)
+    photo_url = serializers.URLField(required=False)
     auth_date = serializers.IntegerField()
     hash = serializers.CharField()
 

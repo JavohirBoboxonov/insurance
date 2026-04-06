@@ -6,6 +6,13 @@ from rest_framework import status
 from .serializer import *
 from .models import CustomUser
 
+class Login(APIView):
+    def post(self, request):
+        serializer = SignInSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            
+            
 
 class TelegramLogin(APIView):
     def post(self, request):
