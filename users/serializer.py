@@ -1,9 +1,9 @@
-from rest_framework import serializers
-from .models import *
 import re
 import hmac
 import hashlib
 import hashlib
+from rest_framework import serializers
+from .models import *
 from django.conf import settings
 from django.contrib.auth import authenticate
 
@@ -17,7 +17,7 @@ class SignInSerializer(serializers.Serializer):
         if not re.match(pattern, attrs['phone_number']):
             raise serializers.ValidationError("Invalid phone number")
         
-        if not CustomUser.objects.filter(attrs['phone_number'] == self.phone_number).exists():
+        if not CustomUser.objects.filter(phone_number = attrs['phone_number']).exists():
             raise serializers.ValidationError("Ushbu raqam ro`yxatdan o`tmagan")
     
         pass_pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$'
@@ -25,10 +25,17 @@ class SignInSerializer(serializers.Serializer):
         if not re.match(pass_pattern, attrs):
             raise serializers.ValidationError("Ushbu parol havfsiz emas")
 
-        user = authenticate(attrs['phone_number', attrs['password']])
+        user = authenticate(phone_number = attrs['phone_number'], password = attrs['password'])
         
         if not user:
             raise serializers.ValidationError("This user none")
+        
+        if not user.is_active:
+            raise serializers.ValidationError('This User is not active')
+        
+        attrs['user'] = user
+
+        return attrs
 
 class TelegramAuthSerializer(serializers.Serializer):
     id = serializers.IntegerField()
