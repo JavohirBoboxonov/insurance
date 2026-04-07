@@ -6,18 +6,10 @@ import hashlib
 import hashlib
 from django.conf import settings
 from django.contrib.auth import authenticate
-from django.core.cache import cache
-from .tasks import register_failed_login, clear_successful_login
-
-
 
 class SignInSerializer(serializers.Serializer):
     phone_number = serializers.CharField(write_only=True, required=True)
     password = serializers.CharField(write_only=True, required=True)
-    
-    def is_blocked(self, phone_number: str) -> bool:
-        hashed = hashlib.md5(phone_number.encode()).hexdigest()
-        return bool(cache.get(f'login_blocked_{hashed}'))
 
     def validate(self, attrs):
         pattern = r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'
@@ -37,10 +29,7 @@ class SignInSerializer(serializers.Serializer):
         
         if not user:
             raise serializers.ValidationError("This user none")
-        
-        
 
-        
 class TelegramAuthSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     first_name = serializers.CharField(required=False)

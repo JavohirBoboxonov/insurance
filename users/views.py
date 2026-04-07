@@ -5,8 +5,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializer import *
 from .models import CustomUser
+from rest_framework.throttling import UserRateThrottle
+
+class CustomUserThrotle(UserRateThrottle):
+    rate = '5/minutte'
 
 class Login(APIView):
+
+    throttle_classes = [CustomUserThrotle]
+
     def post(self, request):
         serializer = SignInSerializer(data=request.data)
         if not serializer.is_valid():
