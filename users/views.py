@@ -6,6 +6,7 @@ from rest_framework import status
 from .serializer import *
 from .models import CustomUser
 from rest_framework.throttling import UserRateThrottle
+from rest_framework.permissions import IsAuthenticated
 
 class CustomUserThrotle(UserRateThrottle):
     rate = '5/minutte'
@@ -36,7 +37,18 @@ class Login(APIView):
             }
         }, status=status.HTTP_400_BAD_REQUEST)
             
+class SignOut(APIView):
+    permission_classes = (IsAuthenticated, )
 
+    def post(self, request):
+        try:
+            refresh_token = request.data['refresh']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"message": "Muvaqiyatli log out qilindi"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": e}, status=status.HTTP_400_BAD_REQUEST)
+        
 class TelegramLogin(APIView):
     def post(self, request):
         serializer = TelegramAuthSerializer(data=request.data)
