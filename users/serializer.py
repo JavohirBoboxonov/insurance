@@ -37,6 +37,47 @@ class SignInSerializer(serializers.Serializer):
 
         return attrs
 
+class RecoveryPassword(serializers.Serializer):
+    phone_number = serializers.CharField(write_only=True, required=True)
+    new_password = serializers.CharField(write_only=True, required=True)
+    confirm_password = serializers.CharField(write_only=True, required=True)
+    
+    def validate_phone_number(self, value):
+        phone_number = value
+
+        phone_pattern = r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'
+        if not re.match(phone_pattern, phone_number):
+            raise serializers.ValidationError("bu format noto`g`ri")
+        
+        if not CustomUser.objects.filter(phone_number = value).exists():
+            raise serializers.ValidationError("bu telefon raqam mavju emas")
+        
+        return value
+
+    def validate(self, attrs):
+        new_password = attrs.get('new_password')
+        confirm_password = attrs.get('confirm_password')
+        
+        password_checker = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$'
+
+        if new_password != confirm_password:
+            raise serializers.ValidationError("bu parol va tasdiqlash paroli bir xil bo`lishi kerak")
+        
+        if not re.match(password_checker, new_password):
+            raise serializers.ValidationError("bu parol standartlarga mos kelmaydi")
+        
+        return attrs
+    
+    def save(self, **kwargs):
+        self.validated_data.pop('confirm_password')
+        new_password = self.validated_data.get('new_password')
+        phone_number = self.validated_data.get('phone_number')
+        user = CustomUser.objects.get(phone_number=phone_number)
+        user.set_password(new_password)
+        user.save()
+        return user
+
+
 class TelegramAuthSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     first_name = serializers.CharField(required=False)

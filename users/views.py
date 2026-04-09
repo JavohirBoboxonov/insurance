@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.core import cache
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
@@ -6,15 +6,16 @@ from rest_framework import status
 from .serializer import *
 from .models import CustomUser
 from rest_framework.throttling import UserRateThrottle
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from datetime import datetime, timedelta
+import jwt
+
 
 class CustomUserThrotle(UserRateThrottle):
     rate = '5/minutte'
 
 class Login(APIView):
-
     throttle_classes = [CustomUserThrotle]
-
     def post(self, request):
         serializer = SignInSerializer(data=request.data)
         if not serializer.is_valid():
