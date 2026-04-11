@@ -7,7 +7,7 @@ class Insurance(models.Model):
     middle_name = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=15, unique=True)
     car_number = models.CharField(max_length=15, unique=True)
-    created_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     expiry_date = models.DateTimeField(blank=True, null=True)
     
     @property
