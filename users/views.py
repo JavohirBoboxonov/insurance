@@ -7,12 +7,9 @@ from .serializer import *
 from .models import CustomUser
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from datetime import datetime, timedelta
-import jwt
-
 
 class CustomUserThrotle(UserRateThrottle):
-    rate = '5/minutte'
+    rate = '5/minute'
 
 class Login(APIView):
     throttle_classes = [CustomUserThrotle]
