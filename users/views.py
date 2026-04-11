@@ -1,4 +1,3 @@
-from django.core import cache
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
@@ -6,7 +5,7 @@ from rest_framework import status
 from .serializer import *
 from .models import CustomUser
 from rest_framework.throttling import UserRateThrottle
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 
 class CustomUserThrotle(UserRateThrottle):
     rate = '5/minute'
