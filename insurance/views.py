@@ -1,19 +1,16 @@
-from rest_framework import viewsets
+from rest_framework.views import APIView
 from serializer import *
 from django.db.models import Q
 from models import Insurance
+from rest_framework import viewsets
 # Create your views here.
 
-class InsuranceViewSet(viewsets.ModelViewSet):
-    queryset = Insurance.objects.all()
-
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return InsuranceCreateSerializer
-        elif self.action in ['update', 'partial_update']:
-            return InsuranceUpdateSerializer
+class InsuranceCreate(APIView):
+    def post(self, request):
+        serializer = InsuranceCreate(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
         
-
 class InsuranceSearch(viewsets.ModelViewSet):
     serializer_class = InsuranceSerializer
 
