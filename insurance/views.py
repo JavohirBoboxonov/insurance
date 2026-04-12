@@ -1,8 +1,12 @@
 from rest_framework.views import APIView
-from serializer import *
+from .serializer import (
+    InsuranceSerializer, 
+    InsuranceCreateSerializer,
+    InsuranceUpdateSerializer
+    )
 from django.db.models import Q
-from models import Insurance
 from rest_framework import viewsets
+from .models import Insurance
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -67,16 +71,13 @@ class InsuranceDelete(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-class InsuranceSearch(viewsets.ModelViewSet):
-    serializer_class = InsuranceSerializer
-
-    def get_queryset(self):
+class InsuranceSearch(APIView):
+    def get(self, request):
         queryset = Insurance.objects.all()
-        search = self.request.query_params.get('q', None)
-
+        search = request.query_params.get('q', None)
         if search:
             queryset = queryset.filter(
-                Q(name__icontains=search),
-                Q(phone_number__icontains=search)
+                Q(name__icontains=search) | Q(phone_number__icontains=search)
             )
-        return queryset
+        serializer = InsuranceSerializer(queryset, many=True)
+        return Response(serializer.data)

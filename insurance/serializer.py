@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import *
+from datetime import timezone
+from .models import Insurance
 
 class InsuranceSerializer(serializers.ModelSerializer):
     class Meta:
