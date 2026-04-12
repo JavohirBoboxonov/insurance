@@ -46,6 +46,26 @@ class InsuranceUpdate(APIView):
             "access": str(refresh_token.access_token)
         }, status=201)
         
+class InsuranceDelete(APIView):
+    def post(self, request):
+        insurance_id = request.data.get('id')
+
+        if not insurance_id:
+            return Response(
+                {"error": "ID yuborilmadi"}
+            )
+        try:
+            insurance = Insurance.objects.get(id=insurance_id)
+            insurance.delete()
+
+            return Response({
+                "message": "Sug`urta muvaqiyatli o`chirildi"
+            }, status=status.HTTP_200_OK)
+        except Insurance.DoesNotExist:
+            return Response(
+                {"error": "Bunday ID dagi sug`urta toopilmadi"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 class InsuranceSearch(viewsets.ModelViewSet):
     serializer_class = InsuranceSerializer
