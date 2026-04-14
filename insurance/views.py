@@ -1,20 +1,21 @@
 from rest_framework.views import APIView
-from .serializer import (
-    InsuranceSerializer, 
-    InsuranceCreateSerializer,
-    InsuranceUpdateSerializer
-    )
+from .serializer import *
 from django.db.models import Q
 from rest_framework import viewsets
 from .models import Insurance
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated, AllowAny
 # Create your views here.
 
 class InsuranceCreate(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    serializer_class = InsuranceCreateSerializer
+
     def post(self, request):
-        serializer = InsuranceCreate(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         if not serializer.is_valid():
             return Response({
                 "detail": "Ma`lumotlar noto`g`ri kiritilgan",
@@ -32,6 +33,9 @@ class InsuranceCreate(APIView):
         }, status=201)
         
 class InsuranceUpdate(APIView):
+
+    serializer_class = InsuranceUpdateSerializer
+
     def post(self, request):
         serializer = InsuranceUpdate(data=request.data, partial=True)
         if not serializer.is_valid():

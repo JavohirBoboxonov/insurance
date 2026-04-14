@@ -12,8 +12,11 @@ class CustomUserThrotle(UserRateThrottle):
 
 class Login(APIView):
     throttle_classes = [CustomUserThrotle]
+
+    serializer_class = SignInSerializer
+
     def post(self, request):
-        serializer = SignInSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         if not serializer.is_valid():
             return Response({
                 'message': 'Ma`lumotlar Noto`g`ri',
