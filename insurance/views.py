@@ -5,6 +5,7 @@ from .models import Insurance
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 
 class InsuranceCreate(APIView):
     permission_classes = (IsAuthenticated, )
@@ -25,7 +26,15 @@ class InsuranceCreate(APIView):
             "detail": "Sug`urta yaratildi",
             "data": InsuranceCreateSerializer(insurance).data,
         }, status=201)
-        
+
+class InsuranceDetail(APIView):
+    def get(self, request, id):
+        insurance_item = get_object_or_404(Insurance, id=id)
+        serializer = InsuranceSerializer(insurance_item)
+        return Response({
+            "data": serializer.data
+        }, status=200)
+
 class InsuranceUpdate(APIView):
     permission_classes = (IsAuthenticated, )
 
