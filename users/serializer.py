@@ -11,23 +11,17 @@ class SignInSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, required=True)
 
     def validate(self, attrs):
-        pattern = r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'
-
-        if not re.match(pattern, attrs['phone_number']):
-            raise serializers.ValidationError("Invalid phone number")
         
         if not CustomUser.objects.filter(phone_number = attrs['phone_number']).exists():
             raise serializers.ValidationError("Ushbu raqam ro`yxatdan o`tmagan")
-    
-        pass_pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$'
 
-        if not re.match(pass_pattern, attrs):
-            raise serializers.ValidationError("Ushbu parol havfsiz emas")
-
-        user = authenticate(phone_number = attrs['phone_number'], password = attrs['password'])
+        user = authenticate(
+            username=attrs['phone_number'],
+            password=attrs['password']
+        )
         
         if not user:
-            raise serializers.ValidationError("This user none")
+            raise serializers.ValidationError("This user Mavjud emas")
         
         if not user.is_active:
             raise serializers.ValidationError('This User is not active')

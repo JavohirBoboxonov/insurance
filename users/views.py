@@ -33,9 +33,10 @@ class Login(APIView):
             "access": str(refresh.access_token),
             "user_data": {
                 "id": user.id,
-                "phone_number": user.phone_number
+                "phone_number": user.phone_number,
+                "email": user.email
             }
-        }, status=status.HTTP_400_BAD_REQUEST)
+        }, status=status.HTTP_200_OK)
             
 class SignOut(APIView):
     permission_classes = (IsAuthenticated, )
@@ -47,7 +48,7 @@ class SignOut(APIView):
             token.blacklist()
             return Response({"message": "Muvaqiyatli log out qilindi"}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error": e}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 class TelegramLogin(APIView):
     def post(self, request):

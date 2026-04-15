@@ -1,9 +1,11 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.getenv('SECRET_KEY')
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+SECRET_KEY = 'django-insecure-=_g*xg%nm$2z-48*n6o9a^pjyf-5dna_fd-fx5wzy+p$6wdp2@'
 ALLOWED_HOSTS = []
-
+DEBUG=True
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -15,7 +17,9 @@ INSTALLED_APPS = [
     'django_celery_results',
     'users',
     'insurance',
-    'drf_spectacular'
+    'rest_framework_simplejwt.token_blacklist',
+    'rest_framework',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -84,6 +88,9 @@ REST_FRAMEWORK = {
         'anon': '10/minute',
         'user': '1000/day'
     },
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
@@ -99,7 +106,7 @@ CACHES = {
 
 AUTH_USER_MODEL = 'users.CustomUser'
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tashkent'
 USE_I18N = True
 USE_TZ = True
 STATIC_URL = 'static/'

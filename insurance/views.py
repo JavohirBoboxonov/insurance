@@ -1,78 +1,73 @@
 from rest_framework.views import APIView
 from .serializer import *
 from django.db.models import Q
-from rest_framework import viewsets
 from .models import Insurance
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated, AllowAny
-# Create your views here.
+from rest_framework.permissions import IsAuthenticated
 
 class InsuranceCreate(APIView):
     permission_classes = (IsAuthenticated, )
-
     serializer_class = InsuranceCreateSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
+
         if not serializer.is_valid():
             return Response({
                 "detail": "Ma`lumotlar noto`g`ri kiritilgan",
                 "errors": serializer.errors
-            },status=status.HTTP_400_BAD_REQUEST)
-        insurance = serializer.validated_data['insurance']
+            }, status=400)
 
-        refresh = RefreshToken(insurance)
+        insurance = serializer.save()
 
         return Response({
             "detail": "Sug`urta yaratildi",
-            "data": insurance.data,
-            "refresh": str(refresh),
-            "access": str(refresh.access_token)
+            "data": InsuranceCreateSerializer(insurance).data,
         }, status=201)
         
 class InsuranceUpdate(APIView):
+    permission_classes = (IsAuthenticated, )
 
-    serializer_class = InsuranceUpdateSerializer
+    serializer_class = InsuranceCreateSerializer
 
-    def post(self, request):
-        serializer = InsuranceUpdate(data=request.data, partial=True)
-        if not serializer.is_valid():
+    def patch(self, request, id):
+        try:
+            insurance = Insurance.objects.get(id=id)
+        except Insurance.DoesNotExist:
             return Response({
-                "detail": "Ma`lumotlar no`to`gri",
-                "error": serializer.errors
-            }, status=400)
-        insuranse = serializer.validated_data['insuranse']
+                "error": "Bunday id dagi sug`urta Topilmadi"
+            },status=400)
+        
+        serializer = InsuranceCreateSerializer(
+            insurance, data=request.data, partial=True
+        )
 
-        refresh_token = RefreshToken(insuranse)
-
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "detail": "Yangilandi",
+                "data": serializer.data,
+            }, status=200)
         return Response({
-            "detail": "sug`urta yangilandi",
-            "data": insuranse,
-            "refresh": str(refresh_token),
-            "access": str(refresh_token.access_token)
-        }, status=201)
+            "error": serializer.errors
+        }, status=400)
         
 class InsuranceDelete(APIView):
-    def post(self, request):
-        insurance_id = request.data.get('id')
-
-        if not insurance_id:
-            return Response(
-                {"error": "ID yuborilmadi"}
-            )
+    permission_classes = (IsAuthenticated, )
+    def post(self, request, id):
         try:
-            insurance = Insurance.objects.get(id=insurance_id)
+            insurance = Insurance.objects.get(id=id)
             insurance.delete()
 
             return Response({
-                "message": "Sug`urta muvaqiyatli o`chirildi"
+                "message": "Sug'urta muvaffaqiyatli o'chirildi"
             }, status=status.HTTP_200_OK)
+
         except Insurance.DoesNotExist:
             return Response(
-                {"error": "Bunday ID dagi sug`urta toopilmadi"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "Bunday ID dagi sug'urta topilmadi"},
+                status=status.HTTP_404_NOT_FOUND
             )
 
 class InsuranceSearch(APIView):
