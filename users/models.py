@@ -10,7 +10,6 @@ class CustomUser(AbstractUser):
     )
     phone_number = models.CharField(
         max_length=15,
-        blank=True,
         unique=True
     )
     telegram_id = models.IntegerField(
