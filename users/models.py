@@ -17,6 +17,6 @@ class CustomUser(AbstractUser):
         null=True,
         unique = True,
     )
-
+    REQUIRED_FIELDS = ['email', 'phone_number']
     def __str__(self):
         return f"{self.username} = {self.phone_number}"
