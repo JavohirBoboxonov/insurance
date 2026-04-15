@@ -75,8 +75,11 @@ class InsuranceSearch(APIView):
         queryset = Insurance.objects.all()
         search = request.query_params.get('q', None)
         if search:
+            search = search.strip().replace(' ', '+')
+            
             queryset = queryset.filter(
-                Q(name__icontains=search) | Q(phone_number__icontains=search)
+                Q(name__icontains=search) |
+                Q(phone_number__icontains=search)
             )
         serializer = InsuranceSerializer(queryset, many=True)
         return Response(serializer.data)
