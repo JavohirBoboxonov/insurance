@@ -13,7 +13,7 @@ class SignInSerializer(serializers.Serializer):
     def validate(self, attrs):
         
         if not CustomUser.objects.filter(phone_number = attrs['phone_number']).exists():
-            raise serializers.ValidationError("Ushbu raqam ro`yxatdan o`tmagan")
+            raise serializers.ValidationError("This phone number is is not exits")
 
         user = authenticate(
             username=attrs['phone_number'],
@@ -21,7 +21,7 @@ class SignInSerializer(serializers.Serializer):
         )
         
         if not user:
-            raise serializers.ValidationError("This user Mavjud emas")
+            raise serializers.ValidationError("This user is not exits")
         
         if not user.is_active:
             raise serializers.ValidationError('This User is not active')
@@ -40,10 +40,10 @@ class RecoveryPassword(serializers.Serializer):
 
         phone_pattern = r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'
         if not re.match(phone_pattern, phone_number):
-            raise serializers.ValidationError("bu format noto`g`ri")
+            raise serializers.ValidationError("This Format is Invalid")
         
         if not CustomUser.objects.filter(phone_number = value).exists():
-            raise serializers.ValidationError("bu telefon raqam mavju emas")
+            raise serializers.ValidationError("This phone number is not exits")
         
         return value
 
@@ -54,10 +54,10 @@ class RecoveryPassword(serializers.Serializer):
         password_checker = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$'
 
         if new_password != confirm_password:
-            raise serializers.ValidationError("bu parol va tasdiqlash paroli bir xil bo`lishi kerak")
+            raise serializers.ValidationError("This password and the confirmation password must be the same.")
         
         if not re.match(password_checker, new_password):
-            raise serializers.ValidationError("bu parol standartlarga mos kelmaydi")
+            raise serializers.ValidationError("This Password must be standarts")
         
         return attrs
     

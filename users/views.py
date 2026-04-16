@@ -19,7 +19,7 @@ class Login(APIView):
         serializer = self.serializer_class(data=request.data)
         if not serializer.is_valid():
             return Response({
-                'message': 'Ma`lumotlar Noto`g`ri',
+                'message': 'Something is wrong',
                 'errors': serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
 
@@ -46,7 +46,7 @@ class SignOut(APIView):
             refresh_token = request.data['refresh']
             token = RefreshToken(refresh_token)
             token.blacklist()
-            return Response({"message": "Muvaqiyatli log out qilindi"}, status=status.HTTP_200_OK)
+            return Response({"message": "Succesfully logout"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         

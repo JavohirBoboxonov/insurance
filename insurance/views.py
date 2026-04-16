@@ -16,10 +16,8 @@ class InsuranceCreate(APIView):
 
         if not serializer.is_valid():
             return Response({
-                "detail": "Ma`lumotlar noto`g`ri kiritilgan",
                 "errors": serializer.errors
             }, status=400)
-
         insurance = serializer.save()
 
         return Response({
@@ -32,7 +30,7 @@ class InsuranceDetail(APIView):
         insurance_item = get_object_or_404(Insurance, id=id)
         if not insurance_item:
             return Response({
-                "bu id dagi sug`urta yo`q"
+                "error": "There is no insurance on such an ID."
             }, status=400)
         serializer = InsuranceSerializer(insurance_item)
         return Response({
@@ -49,7 +47,7 @@ class InsuranceUpdate(APIView):
             insurance = Insurance.objects.get(id=id)
         except Insurance.DoesNotExist:
             return Response({
-                "error": "Bunday id dagi sug`urta Topilmadi"
+                "error": "There is no insurance on such an ID."
             },status=400)
         
         serializer = InsuranceCreateSerializer(
@@ -59,7 +57,7 @@ class InsuranceUpdate(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response({
-                "detail": "Yangilandi",
+                "detail": "Updated",
                 "data": serializer.data,
             }, status=200)
         return Response({
@@ -74,12 +72,12 @@ class InsuranceDelete(APIView):
             insurance.delete()
 
             return Response({
-                "message": "Sug'urta muvaffaqiyatli o'chirildi"
+                "message": "Insurance succesfully deleted"
             }, status=status.HTTP_200_OK)
 
         except Insurance.DoesNotExist:
             return Response(
-                {"error": "Bunday ID dagi sug'urta topilmadi"},
+                {"error": "There is no insurance on such an ID."},
                 status=status.HTTP_404_NOT_FOUND
             )
 
