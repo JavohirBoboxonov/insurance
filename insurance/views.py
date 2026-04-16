@@ -30,6 +30,10 @@ class InsuranceCreate(APIView):
 class InsuranceDetail(APIView):
     def get(self, request, id):
         insurance_item = get_object_or_404(Insurance, id=id)
+        if not insurance_item:
+            return Response({
+                "bu id dagi sug`urta yo`q"
+            }, status=400)
         serializer = InsuranceSerializer(insurance_item)
         return Response({
             "data": serializer.data
