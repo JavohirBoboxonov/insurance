@@ -50,6 +50,19 @@ class SignOut(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+class VerifyApi(APIView):
+    permission_classes = (IsAuthenticated, )
+    def get(self, request):
+        user = request.user
+
+        return Response({
+            "response": "successfull",
+            "data": {
+                "id": user.id,
+                "phone_number": user.phone_number,
+                "is_staff": user.is_staff
+            }
+        }, status=200)
 class TelegramLogin(APIView):
     def post(self, request):
         serializer = TelegramAuthSerializer(data=request.data)
