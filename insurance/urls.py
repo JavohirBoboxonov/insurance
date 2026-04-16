@@ -6,5 +6,5 @@ urlpatterns = [
     path('update/<int:id>/', InsuranceUpdate.as_view(), name='insurance_update'),
     path('search/', InsuranceSearch.as_view(), name='insurance_search'),
     path('delete/<int:id>/', InsuranceDelete.as_view(), name='insurance_delete'),
-    path('detail/<int:pk/', InsuranceDetail.as_view(), name='insurance_detail'),
+    path('detail/<int:pk/>', InsuranceDetail.as_view(), name='insurance_detail'),
 ]
