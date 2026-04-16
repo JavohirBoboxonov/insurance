@@ -20,7 +20,7 @@ class InsuranceCreateSerializer(serializers.ModelSerializer):
         return value
 
     def validate_phone_number(self, value):
-        phone_number_regex = r'^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'
+        phone_number_regex = r'^[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'
 
         if Insurance.objects.filter(phone_number = value).exists():
             raise serializers.ValidationError('This Phone Number already exits')
