@@ -3,7 +3,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status
 from .serializer import *
-from .models import CustomUser
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.permissions import IsAuthenticated
 
@@ -63,22 +62,13 @@ class VerifyApi(APIView):
                 "is_staff": user.is_staff
             }
         }, status=200)
-class TelegramLogin(APIView):
-    def post(self, request):
-        serializer = TelegramAuthSerializer(data=request.data)
-        if serializer.is_valid():
-            data = serializer.validated_data
 
-            user, created = CustomUser.objects.get_or_create(
-                username = f"tg_{data['id']}",
-                defaults={'first_name': data.get('first_name')}
-            )
-
-            refresh = RefreshToken.for_user(user)
-
-            return Response({
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-                "is_new": created
-            })
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class ProfileView(APIView):
+    permission_classes = (IsAuthenticated)
+    def get(self, request):
+        serializer = ProfileSerializer(data=request.data)
+        
+        return Response({
+            "message": "succesfully",
+            "data": serializer.data
+        }, status=200)

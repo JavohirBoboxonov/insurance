@@ -10,22 +10,19 @@ services:
       - .env
     depends_on:
       - db
-      - redis  # 1. Rediska bog'liqlikni qo'shdik
-
+      - redis
   db:
     image: postgres:15-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=django
-      - POSTGRES_USER=related
-      - POSTGRES_PASSWORD=java7834
+      POSTGRES_DB: django
+      POSTGRES_USER: related
+      POSTGRES_PASSWORD: java7834
 
-  # 2. Redis servisining o'zini qo'shdik
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
-
 volumes:
   postgres_data:

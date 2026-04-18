@@ -22,7 +22,6 @@ class CustomUser(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     phone_number = models.CharField(max_length=15, unique=True)
-    telegram_id = models.IntegerField(blank=True, null=True, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 

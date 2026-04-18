@@ -6,6 +6,21 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
+from .models import Insurance
+
+class LargeResults(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 50
+
+class InsuranceListView(ListAPIView):
+    queryset = Insurance.objects.all()
+    serializer_class = InsuranceSerializer
+    pagination_class = LargeResults
+
+
 
 class InsuranceCreate(APIView):
     permission_classes = (IsAuthenticated, )

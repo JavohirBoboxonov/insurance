@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, ".env"))
-SECRET_KEY = 'django-insecure-=_g*xg%nm$2z-48*n6o9a^pjyf-5dna_fd-fx5wzy+p$6wdp2@'
-ALLOWED_HOSTS = []
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALLOWED_HOSTS = ["*"]
 DEBUG=True
 INSTALLED_APPS = [
     'django.contrib.admin',
