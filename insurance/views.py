@@ -10,17 +10,10 @@ from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from .models import Insurance
 
-class LargeResults(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 50
 
 class InsuranceListView(ListAPIView):
     queryset = Insurance.objects.all()
     serializer_class = InsuranceSerializer
-    pagination_class = LargeResults
-
-
 
 class InsuranceCreate(APIView):
     permission_classes = (IsAuthenticated, )
@@ -101,8 +94,7 @@ class InsuranceSearch(APIView):
         queryset = Insurance.objects.all()
         search = request.query_params.get('q', None)
         if search:
-            search = search.strip().replace(' ', '+')
-            
+            search = search.strip()
             queryset = queryset.filter(
                 Q(name__icontains=search) |
                 Q(phone_number__icontains=search)

@@ -6,7 +6,7 @@ class Insurance(models.Model):
     last_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50)
 
-    phone_number = models.IntegerField(unique=True, db_index=True)
+    phone_number = models.CharField(unique=True, max_length=12, db_index=True)
     car_number = models.CharField(max_length=20, unique=True)
 
     created_at = models.DateField(auto_now_add=True)

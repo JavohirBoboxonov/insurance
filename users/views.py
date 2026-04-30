@@ -64,7 +64,7 @@ class VerifyApi(APIView):
         }, status=200)
 
 class ProfileView(APIView):
-    permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated, )
     def get(self, request):
         serializer = ProfileSerializer(data=request.data)
         
