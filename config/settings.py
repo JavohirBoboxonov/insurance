@@ -97,6 +97,13 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+CELERY_BEAT_SCHEDULE = {
+    'check_insurance_expiry_daily': {
+        'task': 'app_name.tasks.check_insurance_expiry',
+        'schedule': 86400.0, # Har 24 soatda bir marta (sekundlarda)
+    },
+}
+
 CACHES = {
     "default":{
         "BACKEND": "django_redis.cache.RedisCache",
