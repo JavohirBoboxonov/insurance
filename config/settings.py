@@ -100,7 +100,7 @@ REST_FRAMEWORK = {
 CELERY_BEAT_SCHEDULE = {
     'check_insurance_expiry_daily': {
         'task': 'app_name.tasks.check_insurance_expiry',
-        'schedule': 86400.0, # Har 24 soatda bir marta (sekundlarda)
+        'schedule': 86400.0,
     },
 }
 
