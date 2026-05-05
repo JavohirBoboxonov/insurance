@@ -48,20 +48,6 @@ class SignOut(APIView):
             return Response({"message": "Succesfully logout"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-class VerifyApi(APIView):
-    permission_classes = (IsAuthenticated, )
-    def get(self, request):
-        user = request.user
-
-        return Response({
-            "response": "successfull",
-            "data": {
-                "id": user.id,
-                "phone_number": user.phone_number,
-                "is_staff": user.is_staff
-            }
-        }, status=200)
 
 class ProfileView(APIView):
     permission_classes = (IsAuthenticated, )

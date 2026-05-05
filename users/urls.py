@@ -3,5 +3,4 @@ from .views import *
 urlpatterns = [
     path('login/', Login.as_view(), name='login'),
     path('logout/', SignOut.as_view(), name='signout'),
-    path('verify/', VerifyApi.as_view(), name='varify')
 ]
