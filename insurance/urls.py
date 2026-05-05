@@ -14,5 +14,5 @@ urlpatterns = [
     path('search/', InsuranceSearch.as_view(), name='insurance_search'),
     path('delete/<int:id>/', InsuranceDelete.as_view(), name='insurance_delete'),
     path('detail/<int:id>/', InsuranceDetail.as_view(), name='insurance_detail'),
-    path('insurances/', InsuranceListView.as_view, name='insurance'),
+    path('insurances/', InsuranceListView.as_view(), name='insurance'),
 ]
