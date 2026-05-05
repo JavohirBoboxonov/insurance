@@ -12,7 +12,7 @@ from .models import Insurance
 
 
 class InsuranceListView(ListAPIView):
-    queryset = Insurance.objects.all()
+    queryset = Insurance.objects.all().order_by('id')
     serializer_class = InsuranceSerializer
 
 class InsuranceCreate(APIView):
