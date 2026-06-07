@@ -6,6 +6,7 @@ from insurance.views import (
     InsuranceDelete, 
     InsuranceDetail,
     InsuranceListView,
+    InsuranceDateUpdate
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     path('delete/<int:id>/', InsuranceDelete.as_view(), name='insurance_delete'),
     path('detail/<int:id>/', InsuranceDetail.as_view(), name='insurance_detail'),
     path('insurances/', InsuranceListView.as_view(), name='insurance'),
-]
+    path('insurances/<int:id>/extend/', InsuranceDateUpdate.as_view(), name='insurance_update')
+]   

@@ -1,18 +1,18 @@
 from rest_framework import serializers
 from django.utils import timezone
-from .models import Insurance
+from .models import InsuranceWay
 import re
 
 class InsuranceSerializer(serializers.ModelSerializer):
     status = serializers.ReadOnlyField()
     remaining_days = serializers.ReadOnlyField()
     class Meta:
-        model = Insurance
+        model = InsuranceWay
         fields = '__all__'
 
 class InsuranceCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Insurance
+        model = InsuranceWay
         fields = '__all__'
     def validate_expiry_date(self, value):
         if value and value < timezone.now().date():
@@ -22,7 +22,7 @@ class InsuranceCreateSerializer(serializers.ModelSerializer):
     def validate_phone_number(self, value):
         phone_number_regex = r'^[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'
 
-        if Insurance.objects.filter(phone_number = value).exists():
+        if InsuranceWay.objects.filter(phone_number = value).exists():
             raise serializers.ValidationError('This Phone Number already exits')
 
         if not re.match(phone_number_regex, value):
@@ -31,7 +31,7 @@ class InsuranceCreateSerializer(serializers.ModelSerializer):
         return value
 
     def validate_car_number(self, attrs):
-        if Insurance.objects.filter(car_number = attrs).exists():
+        if InsuranceWay.objects.filter(car_number = attrs).exists():
             raise serializers.ValidationError('This car Number already exits')
 
         car_number_regex = r'^[0-9]{2}[A-Z][0-9]{3}[A-Z]{2}$'
@@ -41,7 +41,20 @@ class InsuranceCreateSerializer(serializers.ModelSerializer):
         return attrs
     
     def create(self, validated_data):
-        insurance = Insurance.objects.create(
+        insurance = InsuranceWay.objects.create(
             **validated_data
         )
         return insurance
+
+class InsuranceDateUpdateSerializer(serializers.ModelSerializer):
+    
+    expiry_date = serializers.DateField(required=True)
+
+    class Meta:
+        model = InsuranceWay
+        fields = ['expiry_date']
+
+    def validate_expiry_date(self, value):
+        if value and value < timezone.now().date():
+            raise serializers.ValidationError("Past dates cannot be entered.")
+        return value

@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-class Insurance(models.Model):
+class InsuranceWay(models.Model):
     name = models.CharField(max_length=50, db_index=True)
     last_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50)
@@ -10,7 +10,7 @@ class Insurance(models.Model):
     car_number = models.CharField(max_length=20, unique=True)
 
     created_at = models.DateField(auto_now_add=True)
-    expiry_date = models.DateField()
+    expiry_date = models.DateField(null=True, blank=True)
 
     @property
     def remaining_days(self):

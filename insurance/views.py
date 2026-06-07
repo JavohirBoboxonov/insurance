@@ -1,18 +1,18 @@
 from rest_framework.views import APIView
 from .serializer import *
 from django.db.models import Q
-from .models import Insurance
+from .models import InsuranceWay
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
-from .models import Insurance
+from drf_spectacular.utils import extend_schema, OpenApiTypes, OpenApiExample
 
 
 class InsuranceListView(ListAPIView):
-    queryset = Insurance.objects.all().order_by('id')
+    queryset = InsuranceWay.objects.all().order_by('id')
     serializer_class = InsuranceSerializer
 
 class InsuranceCreate(APIView):
@@ -35,7 +35,7 @@ class InsuranceCreate(APIView):
 
 class InsuranceDetail(APIView):
     def get(self, request, id):
-        insurance_item = get_object_or_404(Insurance, id=id)
+        insurance_item = get_object_or_404(InsuranceWay, id=id)
         if not insurance_item:
             return Response({
                 "error": "There is no insurance on such an ID."
@@ -50,13 +50,28 @@ class InsuranceUpdate(APIView):
 
     serializer_class = InsuranceCreateSerializer
 
+    @extend_schema(
+        request=InsuranceDateUpdateSerializer,
+        responses={200: InsuranceDateUpdateSerializer, 400: "Bad Request", 404: "Not Found"},
+        description="Sug'urta muddatini qisman yangilash Api",
+        examples=[
+            OpenApiExample(
+                name="Sana yangilash namunasi",
+                value={
+                    "expiry_date": "2026-12-31"
+                },
+                request_only=True,
+            )
+        ]
+    )
+
     def patch(self, request, id):
         try:
-            insurance = Insurance.objects.get(id=id)
-        except Insurance.DoesNotExist:
+            insurance = InsuranceWay.objects.get(id=id)
+        except InsuranceWay.DoesNotExist:
             return Response({
                 "error": "There is no insurance on such an ID."
-            },status=400)
+            },status=404)
         
         serializer = InsuranceCreateSerializer(
             insurance, data=request.data, partial=True
@@ -71,19 +86,75 @@ class InsuranceUpdate(APIView):
         return Response({
             "error": serializer.errors
         }, status=400)
+    
+class InsuranceDateUpdate(APIView):
+    permission_classes = (IsAuthenticated, )
+    @extend_schema(
+        request={
+            "application/json": {
+                "type": "object",
+                "properties": {
+                    "expiry_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Sug'urtaning yangi tugash sanasi (YYYY-MM-DD)",
+                        "example": "2026-12-31"
+                    }
+                },
+                "required": ["expiry_date"]
+            }
+        },
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "detail": {"type": "string", "example": "Updated"},
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "expiry_date": {"type": "string", "format": "date", "example": "2026-12-31"}
+                        }
+                    }
+                }
+            },
+            400: OpenApiTypes.OBJECT,
+            404: OpenApiTypes.OBJECT
+        },
+        description="Sug'urta muddatini qisman yangilash Api"
+    )
+    def patch(self, request, id):
+        try:
+            insurance = InsuranceWay.objects.get(id=id)
+        except InsuranceWay.DoesNotExist:
+            return Response({
+                "error": "There is no insurance on such ID."
+            }, status=404)
         
+        serializer = InsuranceDateUpdateSerializer(
+            insurance, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "detail": "Updated",
+                "data": serializer.data,
+            })
+        return Response({
+            "error": serializer.errors
+        }, status=400)
+
 class InsuranceDelete(APIView):
     permission_classes = (IsAuthenticated, )
     def post(self, request, id):
         try:
-            insurance = Insurance.objects.get(id=id)
+            insurance = InsuranceWay.objects.get(id=id)
             insurance.delete()
 
             return Response({
                 "message": "Insurance succesfully deleted"
             }, status=status.HTTP_200_OK)
 
-        except Insurance.DoesNotExist:
+        except InsuranceWay.DoesNotExist:
             return Response(
                 {"error": "There is no insurance on such an ID."},
                 status=status.HTTP_404_NOT_FOUND
@@ -91,7 +162,7 @@ class InsuranceDelete(APIView):
 
 class InsuranceSearch(APIView):
     def get(self, request):
-        queryset = Insurance.objects.all()
+        queryset = InsuranceWay.objects.all()
         search = request.query_params.get('q', None)
         if search:
             search = search.strip()
