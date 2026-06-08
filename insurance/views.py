@@ -7,13 +7,19 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListAPIView
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
 from drf_spectacular.utils import extend_schema, OpenApiTypes, OpenApiExample
 
+class DynamicPagination(LimitOffsetPagination):
+    limit_query_param = 'limit'
+    offset_query_param = 'offset'
+    
+    default_limit = 10
 
 class InsuranceListView(ListAPIView):
-    queryset = InsuranceWay.objects.all().order_by('id')
+    queryset = InsuranceWay.objects.all().select_related('id')
     serializer_class = InsuranceSerializer
+    pagination_class = DynamicPagination
 
 class InsuranceCreate(APIView):
     permission_classes = (IsAuthenticated, )
@@ -120,7 +126,7 @@ class InsuranceDateUpdate(APIView):
             400: OpenApiTypes.OBJECT,
             404: OpenApiTypes.OBJECT
         },
-        description="Sug'urta muddatini qisman yangilash Api"
+        description="Sug'urta muddatini yangilash uchun Api"
     )
     def patch(self, request, id):
         try:
